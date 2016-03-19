@@ -49,8 +49,11 @@
 	function mkApi(apiSettings){
 		apiSettings = apiSettings || {};
 		if(!apiSettings.url){
-
+			var rtn = 'ERROR: url is NOT set.';
+			callback(rtn, rtn, 0, {});
+			return;
 		}
+
 		return new (function(apiSettings){
 			this.fnc = function(options, callback){
 				if( arguments.length == 2 ){
@@ -59,16 +62,38 @@
 				}else{
 					callback = arguments[0];
 				}
+
+				var url = '';
+				while( 1 ){
+					var matched = apiSettings.url.match(new RegExp('^([\\s\\S]*?)\\[(.*?)\\]([\\s\\S]*)$'));
+					if( !matched ){
+						url += apiSettings.url;
+						break;
+					}
+					url += matched[1];
+					url += options[matched[2]];
+					apiSettings.url = matched[3];
+				}
+				apiSettings.url = url;
+				if( !apiSettings.method ){
+					apiSettings.method = 'GET';
+				}
+
 				options = options || {};
 				callback = callback || function(){};
 				_this.login(function(){
 					_this.httpRequest(
 						apiSettings.url,
 						{
-							'params': options
+							'params': options ,
+							'method': apiSettings.method
 						},
 						function(bin, status, responseHeaders){
-							bin = JSON.parse(bin);
+							try {
+								bin = JSON.parse(bin);
+							} catch (e) {
+								// console.log(bin);
+							}
 							callback(bin.list, bin, status, responseHeaders);
 						}
 					);
@@ -86,10 +111,104 @@
 	});
 
 	/**
+	 * 所属プロジェクトチーム情報取得
+	 */
+	module.exports.prototype.team = mkApi({
+		'url': 'https://timeslist.com/api/team/[project_no]/'
+	});
+
+	/**
+	* 所属プロジェクトフェーズ情報取得
+	*/
+	module.exports.prototype.phase = mkApi({
+		'url': 'https://timeslist.com/api/phase/[project_no]/'
+	});
+
+	/**
+	* 所属プロジェクト種別リスト情報取得
+	*/
+	module.exports.prototype.facttype = mkApi({
+		'url': 'https://timeslist.com/api/facttype/[project_no]/'
+	});
+
+	/**
+	* 所属プロジェクト種別リストステータス情報取得
+	*/
+	module.exports.prototype.factstatus = mkApi({
+		'url': 'https://timeslist.com/api/factstatus/[project_no]/'
+	});
+
+	/**
+	* 公開範囲情報取得
+	*/
+	module.exports.prototype.factpublic = mkApi({
+		'url': 'https://timeslist.com/api/factpublic/[project_no]/'
+	});
+
+	/**
+	* 担当者情報取得
+	*/
+	module.exports.prototype.factuser = mkApi({
+		'url': 'https://timeslist.com/api/factuser/[project_no]/'
+	});
+
+	/**
+	* カテゴリ情報取得
+	*/
+	module.exports.prototype.category = mkApi({
+		'url': 'https://timeslist.com/api/category/[project_no]/'
+	});
+
+	/**
+	* 重みづけコード情報取得
+	*/
+	module.exports.prototype.factweighting = mkApi({
+		'url': 'https://timeslist.com/api/factweighting/[project_no]/'
+	});
+
+	/**
+	* ファクト情報取得
+	*/
+	module.exports.prototype.fact = mkApi({
+		'url': 'https://timeslist.com/api/fact/[keyword]/'
+	});
+
+	/**
+	* ファクト関連情報取得
+	*/
+	module.exports.prototype.factrel = mkApi({
+		'url': 'https://timeslist.com/api/factrel/[project_no]/'
+	});
+
+	/**
 	 * 個人ToDo情報取得
 	 */
 	module.exports.prototype.factpersonal = mkApi({
 		'url': 'https://timeslist.com/api/factpersonal/'
+	});
+
+	/**
+	* ファクト新規投稿
+	*/
+	module.exports.prototype.postFact = mkApi({
+		'url': 'https://timeslist.com/api/fact/[project_no]/',
+		'method': 'POST'
+	});
+
+	/**
+	* コメント新規投稿
+	*/
+	module.exports.prototype.postComment = mkApi({
+		'url': 'https://timeslist.com/api/fact/[project_no]/[fact_no]/',
+		'method': 'POST'
+	});
+
+	/**
+	* リクエスト投稿
+	*/
+	module.exports.prototype.postRequest = mkApi({
+		'url': 'https://timeslist.com/api/fact/[project_no]/[fact_no]/',
+		'method': 'POST'
 	});
 
 	/**
@@ -119,6 +238,10 @@
 				options.body = '';
 			}
 		}
+		if( options.method.toUpperCase() == 'POST' ){
+			options.headers['Content-Length'] = options.body.length;
+		}
+		delete(options.params);
 		// console.log(options);
 
 		var status = 0;
