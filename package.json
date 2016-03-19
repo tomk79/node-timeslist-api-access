@@ -16,8 +16,13 @@
     "url": "https://github.com/tomk79/node-timeslist-api-access/issues"
   },
   "homepage": "https://github.com/tomk79/node-timeslist-api-access#readme",
-  "dependencies": {},
+  "dependencies": {
+    "es6-promise": "^3.1.2",
+    "url-parse": "^1.0.5",
+    "utils79": "0.0.1-alpha.1"
+  },
   "devDependencies": {
+    "config": "^1.19.0",
     "mocha": "^2.1.0"
   }
 }
