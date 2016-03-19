@@ -4,6 +4,12 @@ TIMESLIST の API アクセスを提供します。
 
 see more about TIMESLIST API: https://timeslist.com/WCM0400/input/
 
+## インストール - Install
+
+```
+$ npm install --save timeslist-api-access
+```
+
 ## 使い方 - Usage
 
 ```js
@@ -22,6 +28,34 @@ timeslistApi.project({
 	console.log(res);
 });
 ```
+
+## API 一覧 - API List
+
+- 取得系
+    - timeslistApi.project(params, callback)
+    - timeslistApi.team(params, callback)
+    - timeslistApi.phase(params, callback)
+    - timeslistApi.facttype(params, callback)
+    - timeslistApi.factstatus(params, callback)
+    - timeslistApi.factpublic(params, callback)
+    - timeslistApi.factuser(params, callback)
+    - timeslistApi.category(params, callback)
+    - timeslistApi.factweighting(params, callback)
+    - timeslistApi.fact(params, callback)
+    - timeslistApi.factrel(params, callback)
+    - timeslistApi.factpersonal(params, callback)
+- ポスト系
+    - timeslistApi.postFact(params, callback)
+    - timeslistApi.postComment(params, callback)
+    - timeslistApi.postRequest(params, callback)
+
+### params
+それぞれAPIの公式ドキュメントを参照してください。
+
+### callback
+
+res, json, status, headers の4つの引数が渡されます。
+
 
 
 ## ライセンス - License
