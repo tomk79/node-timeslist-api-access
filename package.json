@@ -1,6 +1,6 @@
 {
   "name": "timeslist-api-access",
-  "version": "0.0.1-alpha.1",
+  "version": "0.0.1-alpha.2",
   "description": "Agent for TIMESLIST API.",
   "main": "node/main.js",
   "scripts": {
