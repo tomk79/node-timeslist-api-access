@@ -8,6 +8,7 @@
 	var urlParse = require('url-parse');
 	var querystring = require('querystring');
 	var _this;
+	var apiOrigin = 'https://timeslist.com'
 
 	/**
 	 * Constructor
@@ -29,7 +30,7 @@
 			callback();
 			return;
 		}
-		this.httpRequest('https://timeslist.com/api/login/', {
+		this.httpRequest(apiOrigin+'/api/login/', {
 			headers: {
 				'Timeslist-User': this.user_id,
 				'Timeslist-Password': this.user_pw
@@ -56,6 +57,7 @@
 
 		return new (function(apiSettings){
 			this.fnc = function(options, callback){
+				var apiSettingsUrl = apiSettings.url;
 				if( arguments.length == 2 ){
 					options = arguments[0];
 					callback = arguments[1];
@@ -65,25 +67,31 @@
 
 				var url = '';
 				while( 1 ){
-					var matched = apiSettings.url.match(new RegExp('^([\\s\\S]*?)\\[(.*?)\\]([\\s\\S]*)$'));
+					var matched = apiSettingsUrl.match(new RegExp('^([\\s\\S]*?)\\[(.*?)\\]([\\s\\S]*)$'));
 					if( !matched ){
-						url += apiSettings.url;
+						url += apiSettingsUrl;
 						break;
 					}
 					url += matched[1];
-					url += options[matched[2]];
-					apiSettings.url = matched[3];
+					var tmpParamKey = matched[2];
+					if(options[tmpParamKey] === undefined){options[tmpParamKey] = '';}
+					url += options[tmpParamKey];
+					delete(options[tmpParamKey]);
+					apiSettingsUrl = matched[3];
 				}
-				apiSettings.url = url;
+				url = apiOrigin+require('path').resolve(url);
+				apiSettingsUrl = url;
 				if( !apiSettings.method ){
 					apiSettings.method = 'GET';
 				}
 
 				options = options || {};
 				callback = callback || function(){};
+				// console.log(url);
+				// console.log(options);
 				_this.login(function(){
 					_this.httpRequest(
-						apiSettings.url,
+						url,
 						{
 							'params': options ,
 							'method': apiSettings.method
@@ -107,91 +115,91 @@
 	* 所属プロジェクト情報取得
 	*/
 	module.exports.prototype.project = mkApi({
-		'url': 'https://timeslist.com/api/project/'
+		'url': '/api/project/'
 	});
 
 	/**
 	 * 所属プロジェクトチーム情報取得
 	 */
 	module.exports.prototype.team = mkApi({
-		'url': 'https://timeslist.com/api/team/[project_no]/'
+		'url': '/api/team/[project_no]/'
 	});
 
 	/**
 	* 所属プロジェクトフェーズ情報取得
 	*/
 	module.exports.prototype.phase = mkApi({
-		'url': 'https://timeslist.com/api/phase/[project_no]/'
+		'url': '/api/phase/[project_no]/'
 	});
 
 	/**
 	* 所属プロジェクト種別リスト情報取得
 	*/
 	module.exports.prototype.facttype = mkApi({
-		'url': 'https://timeslist.com/api/facttype/[project_no]/'
+		'url': '/api/facttype/[project_no]/'
 	});
 
 	/**
 	* 所属プロジェクト種別リストステータス情報取得
 	*/
 	module.exports.prototype.factstatus = mkApi({
-		'url': 'https://timeslist.com/api/factstatus/[project_no]/'
+		'url': '/api/factstatus/[project_no]/'
 	});
 
 	/**
 	* 公開範囲情報取得
 	*/
 	module.exports.prototype.factpublic = mkApi({
-		'url': 'https://timeslist.com/api/factpublic/[project_no]/'
+		'url': '/api/factpublic/[project_no]/'
 	});
 
 	/**
 	* 担当者情報取得
 	*/
 	module.exports.prototype.factuser = mkApi({
-		'url': 'https://timeslist.com/api/factuser/[project_no]/'
+		'url': '/api/factuser/[project_no]/'
 	});
 
 	/**
 	* カテゴリ情報取得
 	*/
 	module.exports.prototype.category = mkApi({
-		'url': 'https://timeslist.com/api/category/[project_no]/'
+		'url': '/api/category/[project_no]/'
 	});
 
 	/**
 	* 重みづけコード情報取得
 	*/
 	module.exports.prototype.factweighting = mkApi({
-		'url': 'https://timeslist.com/api/factweighting/[project_no]/'
+		'url': '/api/factweighting/[project_no]/'
 	});
 
 	/**
 	* ファクト情報取得
 	*/
 	module.exports.prototype.fact = mkApi({
-		'url': 'https://timeslist.com/api/fact/[keyword]/'
+		'url': '/api/fact/[keyword]/'
 	});
 
 	/**
 	* ファクト関連情報取得
 	*/
 	module.exports.prototype.factrel = mkApi({
-		'url': 'https://timeslist.com/api/factrel/[project_no]/'
+		'url': '/api/factrel/[project_no]/'
 	});
 
 	/**
 	 * 個人ToDo情報取得
 	 */
 	module.exports.prototype.factpersonal = mkApi({
-		'url': 'https://timeslist.com/api/factpersonal/'
+		'url': '/api/factpersonal/[fact_type_status_no]/'
 	});
 
 	/**
 	* ファクト新規投稿
 	*/
 	module.exports.prototype.postFact = mkApi({
-		'url': 'https://timeslist.com/api/fact/[project_no]/',
+		'url': '/api/fact/[project_no]/',
 		'method': 'POST'
 	});
 
@@ -199,7 +207,7 @@
 	* コメント新規投稿
 	*/
 	module.exports.prototype.postComment = mkApi({
-		'url': 'https://timeslist.com/api/fact/[project_no]/[fact_no]/',
+		'url': '/api/fact/[project_no]/[fact_no]/',
 		'method': 'POST'
 	});
 
@@ -207,7 +215,7 @@
 	* リクエスト投稿
 	*/
 	module.exports.prototype.postRequest = mkApi({
-		'url': 'https://timeslist.com/api/fact/[project_no]/[fact_no]/',
+		'url': '/api/fact/[project_no]/[fact_no]/',
 		'method': 'POST'
 	});
 
