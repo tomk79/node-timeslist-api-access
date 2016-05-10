@@ -23,11 +23,11 @@
 	/**
 	 * ログインする
 	 */
-	module.exports.prototype.login = function(callback){
+	module.exports.prototype.login = function(callback, force){
 		callback = callback || function(){};
 		var _this = this;
-		if(_this.accesskey){
-			callback();
+		if(!force && _this.accesskey){
+			callback(true, _this.accesskey);
 			return;
 		}
 		this.httpRequest(apiOrigin+'/api/login/', {
@@ -39,7 +39,7 @@
 			bin = JSON.parse(bin);
 			_this.accesskey = bin.accesskey;
 			// console.log(bin);
-			callback();
+			callback(!bin.return_code, _this.accesskey);
 		});
 		return this;
 	}
@@ -89,23 +89,39 @@
 				callback = callback || function(){};
 				// console.log(url);
 				// console.log(options);
-				_this.login(function(){
-					_this.httpRequest(
-						url,
-						{
-							'params': options ,
-							'method': apiSettings.method
-						},
-						function(bin, status, responseHeaders){
-							try {
-								bin = JSON.parse(bin);
-							} catch (e) {
+				function access(cb, force){
+					_this.login(function(login_result, login_accesskey){
+						// console.log(login_result, login_accesskey);
+						_this.httpRequest(
+							url,
+							{
+								'params': options ,
+								'method': apiSettings.method
+							},
+							function(bin, status, responseHeaders){
+								try {
+									bin = JSON.parse(bin);
+								} catch (e) {
+								}
 								// console.log(bin);
+								if( bin.return_code !== 0 ){
+									if(force){
+										cb(null, bin, status, responseHeaders);
+										return;
+									}
+									setTimeout(function(){
+										access(cb, true);
+									}, 1000);
+									return;
+								}
+								cb(bin.list, bin, status, responseHeaders);
+								return;
 							}
-							callback(bin.list, bin, status, responseHeaders);
-						}
-					);
-				});
+						);
+					}, force);
+
+				}
+				access(callback);
 			}
 		})(apiSettings).fnc;
 	}

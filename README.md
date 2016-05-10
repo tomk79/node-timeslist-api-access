@@ -54,8 +54,13 @@ timeslistApi.project({
 
 ### callback
 
-res, json, status, headers の4つの引数が渡されます。
+`res`, `json`, `status`, `headers` の4つの引数が渡されます。
 
+### login API
+
+ログイン処理は、各APIが暗黙的に実行するので、明示的に発行する必要はありません。
+
+明示的に発行したい場合には、 `timeslistApi.login(callback[, force])` が利用できます。
 
 
 ## ライセンス - License

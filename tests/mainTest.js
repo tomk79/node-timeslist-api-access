@@ -6,6 +6,7 @@ var conf = require('config');
 
 describe('TIMESLIST から情報を取得する', function() {
 	var timeslistApi = new TimeslistApi(conf.user_id, conf.user_pw);
+	// console.log(conf);
 
 	it('所属プロジェクト情報取得', function(done) {
 		this.timeout(10*1000);
