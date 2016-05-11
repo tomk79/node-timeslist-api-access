@@ -28,16 +28,23 @@
 				callback(true, _this.accesskey);
 				return;
 			}
+
 			this.httpRequest(apiOrigin+'/api/login/', {
 				headers: {
 					'Timeslist-User': this.user_id,
 					'Timeslist-Password': this.user_pw
 				}
 			}, function(bin, status, headers){
+				// console.log(bin, status, headers);
+				if(!status){
+					callback(false, false);
+					return;
+				}
 				bin = JSON.parse(bin);
 				_this.accesskey = bin.accesskey;
 				// console.log(bin);
 				callback(!bin.return_code, _this.accesskey);
+				return;
 			});
 			return this;
 		}
@@ -48,9 +55,7 @@
 		this.mkApi = function(apiSettings){
 			apiSettings = apiSettings || {};
 			if(!apiSettings.url){
-				var rtn = 'ERROR: url is NOT set.';
-				callback(rtn, rtn, 0, {});
-				return;
+				return {"error": 'ERROR: url is NOT set.'};
 			}
 
 			return new (function(apiSettings){
@@ -90,6 +95,10 @@
 					function access(cb, force){
 						_this.login(function(login_result, login_accesskey){
 							// console.log(login_result, login_accesskey);
+							if( login_result === false && login_accesskey === false ){
+								cb(null, false, 0, {});
+								return;
+							}
 							_this.httpRequest(
 								url,
 								{
@@ -97,6 +106,10 @@
 									'method': apiSettings.method
 								},
 								function(bin, status, responseHeaders){
+									if( !status ){
+										cb(false, false, 0, {});
+										return;
+									}
 									try {
 										bin = JSON.parse(bin);
 									} catch (e) {
@@ -281,11 +294,15 @@
 				res.on('end', function(){
 					// console.log('No more data in response.');
 					callback(data, status, responseHeaders);
+					return;
 				})
 			});
 
 			req.on('error', function(e){
+				// console.log('[ERROR] TIMESLIST request failed. ' + e.message);
+				// console.log(e);
 				callback('problem with request: '+ e.message, 0, {});
+				return;
 			});
 
 			// write data to request body
