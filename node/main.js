@@ -82,8 +82,10 @@
 						delete(options[tmpParamKey]);
 						apiSettingsUrl = matched[3];
 					}
-					url = apiOrigin+require('path').resolve(url);
+					url = apiOrigin+url;
+					url = url.replace(new RegExp('\\/+$'), '/');
 					apiSettingsUrl = url;
+					// console.log(apiSettingsUrl);
 					if( !apiSettings.method ){
 						apiSettings.method = 'GET';
 					}
