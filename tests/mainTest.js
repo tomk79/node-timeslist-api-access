@@ -206,6 +206,21 @@ describe('TIMESLIST から情報を取得する', function() {
 		});
 	});
 
+	it('認証ユーザー情報取得', function(done) {
+		this.timeout(10*1000);
+
+		timeslistApi.authusers({
+			// 'user_type' : 'myself'
+		}, function(res, json, status, headers){
+			// console.log(res);
+			assert.equal(status, 200);
+			assert.equal(json.return_code, 0);
+			assert.equal(typeof(headers), typeof({}));
+			assert.equal(typeof(res), typeof([]));
+			done();
+		});
+	});
+
 });
 
 describe('TIMESLIST に情報を投稿する', function() {
