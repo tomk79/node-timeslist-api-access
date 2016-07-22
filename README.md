@@ -44,6 +44,7 @@ timeslistApi.project({
     - timeslistApi.fact(params, callback)
     - timeslistApi.factrel(params, callback)
     - timeslistApi.factpersonal(params, callback)
+    - timeslistApi.authusers(params, callback)
 - ポスト系
     - timeslistApi.postFact(params, callback)
     - timeslistApi.postComment(params, callback)

@@ -224,6 +224,13 @@
 		});
 
 		/**
+		 * 認証ユーザー情報取得
+		 */
+		this.authusers = this.mkApi({
+			'url': '/api/authusers/myself/'
+		});
+
+		/**
 		* ファクト新規投稿
 		*/
 		this.postFact = this.mkApi({
